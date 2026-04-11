@@ -1,10 +1,11 @@
 {
-  "name": "dev-confessions",
+  "name": "ai-chatbot-backend",
   "version": "1.0.0",
-  "main": "app.js",
+  "private": true,
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "dotenv": "^16.3.1",

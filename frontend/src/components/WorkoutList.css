@@ -1,0 +1,142 @@
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.list-stats {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
+
+.stat {
+  color: #666;
+}
+
+.stat strong {
+  color: #667eea;
+  font-size: 1.1em;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.workouts-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.workouts-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.workouts-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #555;
+}
+
+.workouts-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.workout-row:hover {
+  background: #f5f7ff;
+}
+
+.exercise-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.weight {
+  font-weight: 700;
+  color: #667eea;
+}
+
+.reps {
+  color: #666;
+}
+
+.date {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-edit {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: #bbdefb;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #ffcdd2;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .workouts-table th,
+  .workouts-table td {
+    padding: 10px 8px;
+    font-size: 0.9em;
+  }
+
+  .btn-action {
+    padding: 6px 8px;
+    font-size: 0.8em;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .table-wrapper {
+    font-size: 0.9em;
+  }
+}

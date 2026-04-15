@@ -24,15 +24,22 @@ generateBtn.addEventListener('click', async () => {
       body: JSON.stringify({ diff }),
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(text || '{}');
+    } catch (parseError) {
+      data = { error: text || 'Unexpected response from backend' };
+    }
 
     if (response.ok) {
-      output.textContent = data.description;
+      output.textContent = data.description || 'No description returned.';
     } else {
-      output.textContent = `Error: ${data.error}`;
+      output.textContent = `Error ${response.status}: ${data.error || JSON.stringify(data)}`;
     }
   } catch (error) {
-    output.textContent = 'Error: Failed to connect to backend.';
+    output.textContent = `Error: Failed to connect to backend. ${error.message}`;
   } finally {
     loading.style.display = 'none';
   }

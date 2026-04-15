@@ -36,7 +36,12 @@ generateBtn.addEventListener('click', async () => {
     if (response.ok) {
       output.textContent = data.description || 'No description returned.';
     } else {
-      output.textContent = `Error ${response.status}: ${data.error || JSON.stringify(data)}`;
+      const errorMessage = data.error || JSON.stringify(data);
+      if (errorMessage.includes('OPENROUTER_API_KEY')) {
+        output.textContent = 'Error: Backend is missing OPENROUTER_API_KEY. Create backend/.env and add the OpenRouter key.';
+      } else {
+        output.textContent = `Error ${response.status}: ${errorMessage}`;
+      }
     }
   } catch (error) {
     output.textContent = `Error: Failed to connect to backend. ${error.message}`;

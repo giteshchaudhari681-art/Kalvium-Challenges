@@ -16,6 +16,10 @@ app.post('/generate-description', async (req, res) => {
   }
 
   try {
+    if (!process.env.OPENROUTER_API_KEY) {
+      return res.status(500).json({ error: 'Server misconfigured: OPENROUTER_API_KEY is missing' });
+    }
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -35,12 +39,18 @@ app.post('/generate-description', async (req, res) => {
 
     const data = await response.json();
 
+    if (!response.ok) {
+      const message = data.error || data.message || 'OpenRouter request failed';
+      return res.status(response.status).json({ error: `OpenRouter error: ${message}` });
+    }
+
     if (data.choices && data.choices[0]) {
       res.json({ description: data.choices[0].message.content });
     } else {
       res.status(500).json({ error: 'Failed to generate description' });
     }
   } catch (error) {
+    console.error('Backend error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

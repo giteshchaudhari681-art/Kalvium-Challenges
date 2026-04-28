@@ -16,7 +16,8 @@ TrackFlow is a high-performance event tracking and analytics API designed for ea
    ```
 3. Create a `.env` file based on `.env.example` and configure your database URL:
    ```env
-   DATABASE_URL=postgres://user:password@localhost:5432/trackflow
+   PRIMARY_DB_URL=postgres://user:password@localhost:5432/trackflow
+   REPLICA_DB_URL=postgres://user:password@localhost:5432/trackflow
    ```
 4. Initialize the database schema:
    ```bash
@@ -50,6 +51,15 @@ Students should use the following data points for their projections and architec
 - **Daily event row growth:** 10,000,000 rows/day
 - **Current events table size:** 45,000,000 rows (4.5 days of data)
 - **Projected monthly growth:** 300,000,000 rows
+
+## Scale Documents
+
+- `GROWTH-ANALYSIS.md` documents the projected table growth, first-breaking queries, and current schema risks.
+- `SCALE-PLAN.md` documents the partitioning, archiving, and read-replica strategy for the API.
+
+## Live Deployment
+
+- Pending deployment
 
 ---
 

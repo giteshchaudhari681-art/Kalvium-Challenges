@@ -2,15 +2,27 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 /**
- * Database connection pool.
- * We use a single connection pool for the entire application to simplify 
- * configuration and ensure we stay within the database's connection limits.
+ * Primary handles all writes. Replica handles read-only traffic.
+ * Local development can point both URLs to the same database.
  */
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+const primaryUrl = process.env.PRIMARY_DB_URL || process.env.DATABASE_URL;
+const replicaUrl = process.env.REPLICA_DB_URL || primaryUrl;
+
+if (!primaryUrl) {
+  throw new Error('PRIMARY_DB_URL or DATABASE_URL must be set');
+}
+
+const primaryPool = new Pool({
+  connectionString: primaryUrl,
+});
+
+const replicaPool = new Pool({
+  connectionString: replicaUrl,
 });
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool
+  readQuery: (text, params) => replicaPool.query(text, params),
+  writeQuery: (text, params) => primaryPool.query(text, params),
+  primaryPool,
+  replicaPool
 };

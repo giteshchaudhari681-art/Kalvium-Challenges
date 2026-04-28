@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -19,8 +20,7 @@ model Product {
   id     Int     @id @default(autoincrement())
   name   String
   price  Float
-  // 🚨 TASK 02 — stock field is intentionally missing.
-  // Add it here before running the migration.
+  stock  Int     @default(0)
   orders Order[]
 }
 

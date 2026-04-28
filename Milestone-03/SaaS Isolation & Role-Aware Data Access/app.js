@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const usersRouter = require('./routes/users');
 const projectsRouter = require('./routes/projects');
+const requestContext = require('./middleware/requestContext');
 
 // JSON parsing middleware
 app.use(express.json());
@@ -10,13 +11,14 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({
     name: 'CorpFlow SaaS API',
-    version: '1.0.0-beta',
+    version: '2.0.0-secure',
     status: 'online',
-    message: 'Welcome to the CorpFlow internal workforce management API.'
+    message: 'Welcome to the CorpFlow tenant-aware workforce management API.'
   });
 });
 
 // Register routers
+app.use(['/users', '/projects'], requestContext);
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
 

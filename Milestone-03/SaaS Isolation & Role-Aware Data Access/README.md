@@ -1,60 +1,88 @@
-# CorpFlow Workforce Management API (v1.0-beta)
+# CorpFlow Workforce Management API (v2.0-secure)
 
-Welcome to the **CorpFlow** engineering starter repository. CorpFlow is a fast-paced SaaS platform designed for high-growth companies to manage their developers, project budgets, and payroll data in one place.
+CorpFlow is a SaaS workforce management API for managing users, projects, and billing data across multiple organisational customers.
 
-This repository contains the first version of the internal API, which provides a simple, direct interface for managing the workforce across multiple organizational customers like **Pouch.io** and **Velocity**.
+This version adds tenant isolation, role-aware response filtering, same-tenant foreign keys, and tenant-scoped indexes.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
-- Node.js (v18 or higher)
-- PostgreSQL (v14 or higher)
+
+- Node.js v18 or higher
+- PostgreSQL v14 or higher
 
 ### 2. Database Setup
-Create a new PostgreSQL database named `corpflow`:
+
+Create a PostgreSQL database named `corpflow`.
+
 ```bash
 createdb corpflow
 ```
 
-Run the schema script to Initialize the tables and seed with test data:
+Run the schema and seed data from the project root.
+
 ```bash
-# From the project root
 npm run seed
 ```
 
 ### 3. Application Setup
-Install dependencies and configure your environment:
+
+Install dependencies and configure your environment.
+
 ```bash
 npm install
 cp .env.example .env
 ```
-*(Update `.env` with your database credentials.)*
+
+Update `.env` with your database credentials if they differ from the local defaults.
 
 ### 4. Run the API
-Start the server in development mode:
+
 ```bash
 npm start
 ```
 
-## 🛤️ API Endpoints
+## Request Context
+
+Every `/users` and `/projects` request requires tenant and actor context.
+
+Supported inputs:
+
+- Headers: `x-tenant-id` and `x-user-id`
+- Query params: `tenant_id` and `requester_id`
+
+Example:
+
+```bash
+curl "http://localhost:3000/users" ^
+  -H "x-tenant-id: 1" ^
+  -H "x-user-id: 1"
+```
+
+## API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
+| --- | --- | --- |
 | GET | `/` | API status and greeting |
-| GET | `/users` | List all workforce users |
-| GET | `/users/:id` | Get details for a specific user |
-| GET | `/projects` | List all active project budgets |
-| GET | `/projects/:id`| View details on a specific project |
+| GET | `/users` | List tenant-scoped users visible to the requesting role |
+| GET | `/users/:id` | Get a tenant-scoped user profile if the role is allowed |
+| GET | `/projects` | List tenant-scoped projects visible to the requesting role |
+| GET | `/projects/:id` | View a tenant-scoped project if the role is allowed |
 
----
+## Role Rules
 
-## 🛠️ Internal Roadmap (Upcoming Features)
-The current version is an early release. The engineering team is moving fast, and we are planning to add:
-- Advanced filtering and sorting.
-- Complex project-to-user mappings.
-- Expanded billing and payroll reporting.
-- Enhanced analytics dashboards.
+- `admin`: all users, all projects, and allowed sensitive fields within the tenant
+- `manager`: self and direct reports, plus owned or team-assigned projects, without salary or project budget
+- `user`: own profile and assigned projects only, without salary or project budget
 
----
+## Documentation
+
+- Pre-refactor audit: [AUDIT.md](./AUDIT.md)
+- Security decisions: [SECURITY.md](./SECURITY.md)
+
+## Live Deployment
+
+- Pending deployment
+
 **Status:** Alpha
 **License:** Private Internal Use Only

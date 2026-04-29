@@ -1,12 +1,15 @@
 import { getProducts, getProductById } from './product.service.js';
+import { HttpError } from '../utils/httpError.js';
 
 export async function listProducts(req, res) {
   try {
-    // ❌ Raw query params passed directly, no validation
     const products = await getProducts(req.query);
     res.json(products);
   } catch (err) {
     console.error(err);
+    if (err instanceof HttpError) {
+      return res.status(err.statusCode).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }

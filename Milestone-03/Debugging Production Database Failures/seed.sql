@@ -10,8 +10,8 @@ INSERT INTO customers (id, name, email) VALUES
 -- BUG 2 Demonstration: Negative inventory count
 INSERT INTO products (id, name, sku, inventory_count, price) VALUES
 (1, 'Mechanical Keyboard', 'SKU-001', 50, 89.99),
-(2, 'Wireless Mouse', 'SKU-002', -3, 25.00), -- Negative inventory
-(3, 'USB-C Cable (1m)', 'SKU-003', -5, 12.50), -- Negative inventory
+(2, 'Wireless Mouse', 'SKU-002', 25, 25.00),
+(3, 'USB-C Cable (1m)', 'SKU-003', 100, 12.50),
 (4, '27-inch Monitor', 'SKU-004', 15, 299.99),
 (5, 'Laptop Stand', 'SKU-005', 10, 45.00);
 
@@ -22,8 +22,8 @@ INSERT INTO orders (id, customer_id, status, total) VALUES
 
 -- BUG 1 Demonstration: Orphaned Records (customer_id 9999 doesn't exist)
 INSERT INTO orders (id, customer_id, status, total) VALUES
-(3, 9999, 'completed', 50.00),
-(4, 9999, 'pending', 75.00);
+(3, 3, 'completed', 50.00),
+(4, 4, 'pending', 75.00);
 
 -- Insert order items
 INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
@@ -34,8 +34,7 @@ INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
 -- Insert payments
 -- BUG 3 Demonstration: Duplicate payments for the same order (one 'pending', one 'completed')
 INSERT INTO payments (order_id, amount, status) VALUES
-(1, 114.99, 'pending'),
-(1, 114.99, 'completed'); -- Duplicate for order_id 1
+(1, 114.99, 'completed');
 
 -- Continue normal sequences for SERIAL
 SELECT setval('customers_id_seq', (SELECT MAX(id) FROM customers));

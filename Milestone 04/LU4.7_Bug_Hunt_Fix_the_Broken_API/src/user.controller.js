@@ -31,27 +31,42 @@ const AppError = require('./utils/AppError');
 
 const prisma = new PrismaClient();
 
+function parseUserId(idParam) {
+  const id = Number.parseInt(idParam, 10);
+
+  if (Number.isNaN(id)) {
+    throw new AppError('Invalid user ID', 400);
+  }
+
+  return id;
+}
+
 // POST /users
 async function createUser(req, res, next) {
-  // BUG 04
   try {
-    const user = await prisma.user.create({ data: req.body });
-    // BUG 02
-    res.status(200).json(user);
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+      return next(new AppError('Name and email are required', 400));
+    }
+
+    const user = await prisma.user.create({ data: { name, email } });
+    res.status(201).json(user);
   } catch (error) {
-    // BUG 07 & BUG 08
-    console.log(error);
+    next(error);
   }
 }
 
 // GET /users/:id
 async function getUser(req, res, next) {
   try {
-    const id = parseInt(req.params.id);
-    // BUG 01
-    const user = prisma.user.findUnique({ where: { id } });
-    
-    // BUG 03
+    const id = parseUserId(req.params.id);
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
     res.json({ id: user.id, name: user.name, email: user.email });
   } catch (err) {
     next(err);
@@ -61,7 +76,7 @@ async function getUser(req, res, next) {
 // DELETE /users/:id (This endpoint is correct as a reference)
 async function deleteUser(req, res, next) {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseUserId(req.params.id);
     await prisma.user.delete({ where: { id } });
     res.status(204).send();
   } catch (err) {

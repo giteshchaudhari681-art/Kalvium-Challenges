@@ -28,12 +28,52 @@ const dashboardStats = {
   totalRevenue: 15420.50,
   totalOrders: 284,
   activeCustomers: 156,
-  averageOrderValue: 54.30
+  averageOrderValue: 54.30,
+};
+
+const getScenario = (resource) => {
+  if (typeof window === 'undefined') {
+    return 'live';
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  return params.get(`${resource}State`) || params.get('state') || 'live';
+};
+
+const resolveCollection = async (resource, data, errorMessage, waitTime) => {
+  await delay(waitTime);
+
+  const scenario = getScenario(resource);
+
+  if (scenario === 'error') {
+    throw new Error(errorMessage);
+  }
+
+  if (scenario === 'empty') {
+    return [];
+  }
+
+  return data;
+};
+
+const resolveObject = async (resource, data, errorMessage, waitTime) => {
+  await delay(waitTime);
+
+  const scenario = getScenario(resource);
+
+  if (scenario === 'error') {
+    throw new Error(errorMessage);
+  }
+
+  if (scenario === 'empty') {
+    return null;
+  }
+
+  return data;
 };
 
 export const fetchOrders = async () => {
-  await delay(1500);
-  return ordersData;
+  return resolveCollection('orders', ordersData, 'Failed to fetch orders from downstream service.', 1500);
 };
 
 export const fetchOrdersEmpty = async () => {
@@ -47,8 +87,7 @@ export const fetchOrdersError = async () => {
 };
 
 export const fetchProducts = async () => {
-  await delay(1200);
-  return productsData;
+  return resolveCollection('products', productsData, 'Unable to connect to inventory database.', 1200);
 };
 
 export const fetchProductsEmpty = async () => {
@@ -62,8 +101,7 @@ export const fetchProductsError = async () => {
 };
 
 export const fetchCustomers = async () => {
-  await delay(1000);
-  return customersData;
+  return resolveCollection('customers', customersData, 'Auth server rejected the customer listing request.', 1000);
 };
 
 export const fetchCustomersEmpty = async () => {
@@ -77,6 +115,5 @@ export const fetchCustomersError = async () => {
 };
 
 export const fetchDashboardStats = async () => {
-  await delay(800);
-  return dashboardStats;
+  return resolveObject('dashboard', dashboardStats, 'Metrics service timed out before the dashboard could render.', 800);
 };

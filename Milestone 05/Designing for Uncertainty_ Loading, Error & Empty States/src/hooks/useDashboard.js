@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { fetchDashboardStats } from '../api/mockApi';
 
 export const useDashboard = () => {

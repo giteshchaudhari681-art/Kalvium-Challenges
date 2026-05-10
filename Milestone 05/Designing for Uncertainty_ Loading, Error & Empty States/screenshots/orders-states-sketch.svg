@@ -1,0 +1,65 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" fill="#F8FAFC"/>
+  <text x="720" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#0F172A">Orders Screen State Sketch</text>
+
+  <g transform="translate(48 104)">
+    <rect width="416" height="720" rx="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+    <text x="32" y="48" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Loading</text>
+    <text x="32" y="78" font-family="Arial, sans-serif" font-size="14" fill="#64748B">Four stacked order skeleton cards</text>
+    <g transform="translate(24 112)">
+      <rect width="368" height="96" rx="18" fill="#E2E8F0"/>
+      <rect x="20" y="24" width="116" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="20" y="50" width="148" height="12" rx="6" fill="#F1F5F9"/>
+      <rect x="284" y="24" width="64" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="276" y="50" width="72" height="24" rx="12" fill="#F8FAFC"/>
+    </g>
+    <g transform="translate(24 228)">
+      <rect width="368" height="96" rx="18" fill="#E2E8F0"/>
+      <rect x="20" y="24" width="116" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="20" y="50" width="148" height="12" rx="6" fill="#F1F5F9"/>
+      <rect x="284" y="24" width="64" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="276" y="50" width="72" height="24" rx="12" fill="#F8FAFC"/>
+    </g>
+    <g transform="translate(24 344)">
+      <rect width="368" height="96" rx="18" fill="#E2E8F0"/>
+      <rect x="20" y="24" width="116" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="20" y="50" width="148" height="12" rx="6" fill="#F1F5F9"/>
+      <rect x="284" y="24" width="64" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="276" y="50" width="72" height="24" rx="12" fill="#F8FAFC"/>
+    </g>
+    <g transform="translate(24 460)">
+      <rect width="368" height="96" rx="18" fill="#E2E8F0"/>
+      <rect x="20" y="24" width="116" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="20" y="50" width="148" height="12" rx="6" fill="#F1F5F9"/>
+      <rect x="284" y="24" width="64" height="14" rx="7" fill="#CBD5E1"/>
+      <rect x="276" y="50" width="72" height="24" rx="12" fill="#F8FAFC"/>
+    </g>
+  </g>
+
+  <g transform="translate(512 104)">
+    <rect width="416" height="720" rx="28" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="3"/>
+    <text x="32" y="48" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Error</text>
+    <text x="32" y="78" font-family="Arial, sans-serif" font-size="14" fill="#64748B">Message plus a visible retry action</text>
+    <circle cx="208" cy="276" r="44" fill="#FEE2E2"/>
+    <path d="M208 250L236 298H180L208 250Z" fill="#DC2626"/>
+    <rect x="88" y="360" width="240" height="18" rx="9" fill="#0F172A"/>
+    <rect x="68" y="394" width="280" height="14" rx="7" fill="#CBD5E1"/>
+    <rect x="106" y="418" width="204" height="14" rx="7" fill="#E2E8F0"/>
+    <rect x="144" y="476" width="128" height="48" rx="24" fill="#0F172A"/>
+    <text x="208" y="507" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Retry</text>
+  </g>
+
+  <g transform="translate(976 104)">
+    <rect width="416" height="720" rx="28" fill="#FFFFFF" stroke="#93C5FD" stroke-width="3"/>
+    <text x="32" y="48" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Empty</text>
+    <text x="32" y="78" font-family="Arial, sans-serif" font-size="14" fill="#64748B">Illustration, explanation, and CTA</text>
+    <rect x="148" y="216" width="120" height="120" rx="28" fill="#DBEAFE"/>
+    <path d="M176 286H240" stroke="#2563EB" stroke-width="10" stroke-linecap="round"/>
+    <path d="M192 252H224V320H192V252Z" stroke="#2563EB" stroke-width="10" stroke-linejoin="round"/>
+    <rect x="116" y="384" width="184" height="18" rx="9" fill="#0F172A"/>
+    <rect x="84" y="418" width="248" height="14" rx="7" fill="#CBD5E1"/>
+    <rect x="106" y="442" width="204" height="14" rx="7" fill="#E2E8F0"/>
+    <rect x="120" y="500" width="176" height="48" rx="24" fill="#2563EB"/>
+    <text x="208" y="531" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Refresh Orders</text>
+  </g>
+</svg>

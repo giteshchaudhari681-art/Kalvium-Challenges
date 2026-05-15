@@ -41,4 +41,17 @@
 
 ## Fixes Applied
 
-- Pending implementation.
+- Bug 1: Wrapped the entire app with `AuthProvider` in `src/main.jsx`, with `AuthProvider` outside `BrowserRouter` so every route and navbar render can read the same auth context.
+- Bug 2: Rebuilt `AuthContext.jsx` to expose `user`, `token`, `isAuthenticated`, `login()`, and `logout()` in the provider value. `login()` now stores `authToken` and `authUser`, `logout()` removes both keys, and the provider restores persisted auth data on mount.
+- Bug 2 follow-up: Initialized auth state from `localStorage` immediately in the provider so a hard refresh on a protected route does not redirect to `/login` before hydration completes.
+- Bug 3: Added `src/components/ProtectedRoute.jsx` and wrapped `/dashboard`, `/settings`, and `/profile` in `App.jsx`. Unauthenticated access now redirects to `/login` with `replace`.
+- Bug 4: Rebuilt `Navbar.jsx` to consume `useAuth()`, show only `Login` when unauthenticated, and show the authenticated nav, current user name, and a working `Logout` button when authenticated.
+
+## Verification Results
+
+- Unauthenticated visit to `/dashboard` redirects to `/login`.
+- Valid login navigates to `/dashboard`, shows the authenticated navbar, and writes both `authToken` and `authUser` to `localStorage`.
+- Refresh while logged in keeps the user on `/dashboard` and preserves the authenticated navbar state.
+- Logout removes both `localStorage` keys, updates the navbar back to `Login`, and returns the user to `/login`.
+- Visiting `/dashboard` after logout redirects back to `/login` again.
+- Screenshot evidence is stored in `screenshots/01-unauth-redirect.png` through `screenshots/05-post-logout-redirect.png`.

@@ -1,46 +1,66 @@
-import { createContext, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 
-export const AuthContext = createContext(null)
+export const AuthContext = createContext(undefined)
 
-/**
- * AuthProvider provides the authentication state to the application.
- * Note: Submitting multiple bugs here for the student to find.
- */
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(null)
+const getStoredUser = () => {
+  const storedUser = localStorage.getItem('authUser')
 
-  // BUG 2: Login handles state but fails to persist the session to localStorage
-  const login = (userData, fakeToken) => {
-    setUser(userData)
-    setToken(fakeToken)
-    
-    // ❌ Missing: localStorage.setItem('authToken', fakeToken)
-    // ❌ Missing: localStorage.setItem('authUser', JSON.stringify(userData))
-    console.log('✅ User logged in:', userData.email)
+  if (!storedUser) {
+    return null
   }
 
-  // BUG 3 (Part 2): Logout clears state but may leave data in storage or has issues
+  try {
+    return JSON.parse(storedUser)
+  } catch {
+    localStorage.removeItem('authUser')
+    return null
+  }
+}
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(getStoredUser)
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'))
+
+  const login = (userData, nextToken) => {
+    setUser(userData)
+    setToken(nextToken)
+
+    localStorage.setItem('authToken', nextToken)
+    localStorage.setItem('authUser', JSON.stringify(userData))
+  }
+
   const logout = () => {
     setUser(null)
     setToken(null)
-    // ❌ Missing: localStorage.removeItem('authToken')
-    // ❌ Missing: localStorage.removeItem('authUser')
-    console.log('🚪 User logged out')
+
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authUser')
   }
 
-  // BUG 2 (Part 2): Missing useEffect to load user from localStorage on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken')
+    const storedUser = getStoredUser()
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!token, // Derived state for Bug 3
-    login,
-    logout
-  }
+    if (storedToken && storedUser) {
+      setToken(storedToken)
+      setUser(storedUser)
+      return
+    }
+
+    setToken(null)
+    setUser(null)
+  }, [])
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!token,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

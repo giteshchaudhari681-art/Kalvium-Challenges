@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getOrders } from './ordersService';
 import OrderCard from './OrderCard';
-import EmptyState from './components/EmptyState';
-import Spinner from './components/Spinner';
-import ErrorMessage from './components/ErrorMessage';
+import EmptyState from '../../components/EmptyState';
+import Spinner from '../../components/Spinner';
+import ErrorMessage from '../../components/ErrorMessage';
 import { PackageSearch, History, RefreshCcw } from 'lucide-react';
 
 const OrdersList = () => {

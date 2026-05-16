@@ -1,6 +1,6 @@
 import React from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { formatCurrency } from './utils/formatCurrency';
+import { formatCurrency } from '../../utils/formatCurrency';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (

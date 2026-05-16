@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useProducts } from './useProducts';
 import ProductCard from './ProductCard';
-import Spinner from './components/Spinner';
-import ErrorMessage from './components/ErrorMessage';
-import { useDebounce } from './hooks/useDebounce';
+import Spinner from '../../components/Spinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useDebounce } from '../../hooks/useDebounce';
 import { Search, ShoppingBag } from 'lucide-react';
 
 const ProductList = ({ onAddToCart }) => {

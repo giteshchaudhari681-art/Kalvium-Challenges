@@ -4,7 +4,7 @@ import ProductList from './ProductList';
 import CartSummary from './CartSummary';
 import Dashboard from './Dashboard';
 import LoginForm from './LoginForm';
-import Navbar from './Navbar';
+import Navbar from './components/Navbar';
 import { useCart } from './useCart';
 import { logoutUser } from './loginService';
 

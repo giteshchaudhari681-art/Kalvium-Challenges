@@ -3,10 +3,10 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import ProductList from './ProductList';
 import CartSummary from './CartSummary';
 import Dashboard from './Dashboard';
-import LoginForm from './LoginForm';
+import LoginForm from './features/auth/LoginForm';
 import Navbar from './components/Navbar';
 import { useCart } from './useCart';
-import { logoutUser } from './loginService';
+import { logoutUser } from './features/auth/loginService';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('auth_token'));

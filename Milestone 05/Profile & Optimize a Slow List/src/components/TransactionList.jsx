@@ -1,37 +1,66 @@
 import React from 'react';
+import { List } from 'react-window';
 import TransactionRow from './TransactionRow';
+
+const LIST_HEIGHT = 649;
+const ROW_HEIGHT = 83;
+
+const EmptyState = () => (
+  <div className="flex h-full flex-col items-center justify-center space-y-3 p-8 text-gray-500">
+    <div className="rounded-full bg-gray-50 p-4">
+      <svg
+        className="h-12 w-12 text-gray-300"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+    <p className="text-lg font-medium">No transactions found</p>
+    <p className="text-sm">Try adjusting your search filters</p>
+  </div>
+);
+
+const VirtualRow = ({ index, style, transactions, onSelect }) => {
+  const transaction = transactions[index];
+
+  return (
+    <TransactionRow
+      transaction={transaction}
+      onSelect={onSelect}
+      style={style}
+    />
+  );
+};
 
 const TransactionList = ({ transactions, onSelect }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col h-[700px]">
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {/* 
-          DELIBERATE PERFORMANCE PROBLEM:
-          Rendering all 2,000+ items at once instead of using virtualization 
-        */}
+    <div className="flex h-[700px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="flex-1">
         {transactions.length > 0 ? (
-          transactions.map((transaction) => (
-            <TransactionRow 
-              key={transaction.id} 
-              transaction={transaction} 
-              onSelect={onSelect} 
-            />
-          ))
+          <List
+            className="custom-scrollbar"
+            defaultHeight={LIST_HEIGHT}
+            rowCount={transactions.length}
+            rowHeight={ROW_HEIGHT}
+            rowProps={{ transactions, onSelect }}
+            rowComponent={VirtualRow}
+            overscanCount={4}
+            style={{ height: LIST_HEIGHT }}
+          />
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-gray-500 p-8 space-y-3">
-             <div className="p-4 bg-gray-50 rounded-full">
-                <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-             </div>
-             <p className="text-lg font-medium">No transactions found</p>
-             <p className="text-sm">Try adjusting your search filters</p>
-          </div>
+          <EmptyState />
         )}
       </div>
-      
-      <div className="p-4 bg-gray-50 border-t border-gray-200">
-        <p className="text-xs text-center text-gray-400 font-medium uppercase tracking-widest">
+
+      <div className="border-t border-gray-200 bg-gray-50 p-4">
+        <p className="text-center text-xs font-medium uppercase tracking-widest text-gray-400">
           End of Transactions
         </p>
       </div>

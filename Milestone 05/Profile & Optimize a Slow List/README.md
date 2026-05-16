@@ -1,31 +1,25 @@
 # TxnTracker Performance Challenge
 
-Welcome to the TxnTracker React Performance Engineering challenge. Your task is to identify and resolve critical performance bottlenecks in this high-volume transaction dashboard.
+Welcome to the TxnTracker React Performance Engineering challenge. This version includes the completed optimization pass and the supporting measurements.
 
 ## Initial Setup
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+npm run dev
+```
 
-2. Run the development server:
-   ```bash
-   npm run dev
-   ```
+## Live Deployment
 
-3. Open the application in your browser.
+https://txntracker-list-optimisation-gitesh.vercel.app
 
-## The Challenge
+## Summary
 
-The dashboard currently renders 2,000 transaction records. While it looks polished, it is architecturally broken from a performance standpoint. You will notice significant lag when:
-- Typing in the search filter.
-- Selecting transactions from the list.
+The dashboard originally rendered 2,000 transaction rows at once and froze on search input. The optimized version applies:
 
-## Your Task
+- `react-window` virtualization
+- `React.memo` row memoization
+- `useCallback` for stable row selection
+- `useMemo` for cached filtering
 
-1. **Profile**: Use the React DevTools Profiler to record a baseline of the slow interactions.
-2. **Optimize**: Systematically apply four optimization techniques (Memoization, Function stability, Computed state caching, and Virtualization).
-3. **Report**: Document your findings and improvements in `PERF_REPORT.md`.
-
-Good luck!
+Detailed measurements and analysis are documented in [PERF_REPORT.md](./PERF_REPORT.md).

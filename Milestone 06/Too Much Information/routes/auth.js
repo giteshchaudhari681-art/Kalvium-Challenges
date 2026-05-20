@@ -1,9 +1,11 @@
+import 'dotenv/config';
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import pg from 'pg';
 import authenticate from '../middleware/authenticate.js';
+import { toAuthUser, toProfileUser } from '../response-mappers.js';
 
 const router = express.Router();
 const pool = new pg.Pool({
@@ -28,7 +30,7 @@ router.post('/signup', async (req, res) => {
       [name, email, hash, verificationToken]
     );
 
-    res.status(201).json({ user: result.rows[0] });
+    res.status(201).json({ user: toAuthUser(result.rows[0]) });
   } catch (err) {
     console.error(err);
     if (err.code === '23505') {
@@ -55,18 +57,17 @@ router.post('/login', async (req, res) => {
     }
 
     // Broken token — packs far too much sensitive data into JWT claims
-    const token = jwt.sign({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      isAdmin: user.is_admin,
-      stripeCustomerId: user.stripe_customer_id,
-      subscriptionPlan: user.subscription_plan,
-      featureFlags: user.feature_flags
-    }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     // Also returns full user object in body
-    res.json({ token, user });
+    res.json({ token, user: toAuthUser(user) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -81,7 +82,7 @@ router.get('/me', authenticate, async (req, res) => {
       'SELECT * FROM users WHERE id = $1',
       [req.user.userId]
     );
-    res.json({ user: result.rows[0] });
+    res.json({ user: toProfileUser(result.rows[0]) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

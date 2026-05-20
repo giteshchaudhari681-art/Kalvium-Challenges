@@ -41,6 +41,12 @@ CorpAuth is a working Node.js auth API. Users can sign up, log in, and fetch the
 
 ---
 
+## Live Deployment
+
+- https://corpauth-too-much-information.vercel.app
+
+---
+
 ## Test Credentials (from seed)
 
 - **Admin**: `admin@corpauth.dev` / `password123`

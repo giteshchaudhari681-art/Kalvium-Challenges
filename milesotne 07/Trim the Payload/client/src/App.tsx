@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { startTransition, useEffect, useState } from 'react';
 import { 
-  LayoutDashboard, 
   ShoppingBag, 
   Users, 
-  Settings, 
   LogOut, 
   Search, 
-  Bell, 
   TrendingUp, 
   DollarSign, 
   Clock,
-  ExternalLink,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -27,31 +25,41 @@ interface Order {
   createdAt: string;
   user: {
     id: number;
-    name: string;
+    name: string | null;
     email: string;
-    avatarUrl: string;
-    address: string;
-    bio: string; // Wasteful in list view
+    avatarUrl: string | null;
   };
   items: {
-    id: number;
-    productId: number;
-    quantity: number;
-    price: number;
     product: {
       name: string;
-      image: string;
-      category: {
-        name: string;
-        description: string; // Wasteful in list view
-      }
-    }
+    };
   }[];
+}
+
+interface OrdersResponse {
+  orders: Order[];
+  pagination: {
+    currentPage: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }
 
 const DashboardApp: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    limit: 25,
+    total: 0,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalOrders: 0,
@@ -60,26 +68,34 @@ const DashboardApp: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    const abortController = new AbortController();
+    fetchOrders(page, abortController.signal);
 
-  const fetchOrders = async () => {
+    return () => abortController.abort();
+  }, [page]);
+
+  const fetchOrders = async (nextPage = page, signal?: AbortSignal) => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/orders');
-      const data = await response.json();
-      setOrders(data);
-      
-      // Calculate mock stats from real data
-      const total = data.reduce((acc: number, o: Order) => acc + (o.total || 0), 0);
-      setStats({
-        totalRevenue: total,
-        totalOrders: data.length,
-        activeCustomers: new Set(data.map((o: Order) => o.user?.id)).size,
-        avgOrderValue: total / (data.length || 1)
+      const response = await fetch(`http://localhost:3001/api/orders?page=${nextPage}&limit=25`, { signal });
+      const data: OrdersResponse = await response.json();
+
+      startTransition(() => {
+        setOrders(data.orders);
+        setPagination(data.pagination);
+
+        const total = data.orders.reduce((acc, order) => acc + order.total, 0);
+        setStats({
+          totalRevenue: total,
+          totalOrders: data.pagination.total,
+          activeCustomers: new Set(data.orders.map((order) => order.user.id)).size,
+          avgOrderValue: total / (data.orders.length || 1)
+        });
       });
     } catch (err) {
-      console.error(err);
+      if ((err as Error).name !== 'AbortError') {
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -153,7 +169,7 @@ const DashboardApp: React.FC = () => {
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Orders Performance Dashboard</h1>
               <div className="flex gap-3">
                 <button 
-                  onClick={fetchOrders}
+                  onClick={() => fetchOrders(page)}
                   disabled={loading}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
                 >
@@ -227,9 +243,12 @@ const DashboardApp: React.FC = () => {
                           <td className="px-6 py-4 font-mono font-medium text-slate-400">#{order.id.toString().padStart(4, '0')}</td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <img src={order.user.avatarUrl} className="w-8 h-8 rounded-full bg-slate-100" />
+                              <img
+                                src={order.user.avatarUrl ?? 'https://api.dicebear.com/7.x/initials/svg?seed=Unknown'}
+                                className="w-8 h-8 rounded-full bg-slate-100"
+                              />
                               <div>
-                                <p className="font-semibold text-slate-900">{order.user.name}</p>
+                                <p className="font-semibold text-slate-900">{order.user.name ?? 'Unknown customer'}</p>
                                 <p className="text-xs text-slate-500">{order.user.email}</p>
                               </div>
                             </div>
@@ -262,10 +281,30 @@ const DashboardApp: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200/50 flex justify-end">
-                <p className="text-xs text-rose-600 font-bold italic">
-                  Critical Lag: ~{(JSON.stringify(orders).length / 1024).toFixed(1)} KB payload (500+ items, N+1 Query, No Pagination)
+              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200/50 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p className="text-xs text-slate-500 font-semibold">
+                  Showing page {pagination.currentPage} of {pagination.totalPages} for {pagination.total} orders
                 </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPage((current) => Math.max(1, current - 1))}
+                    disabled={loading || !pagination.hasPrevPage}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ChevronLeft size={16} />
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPage((current) => current + 1)}
+                    disabled={loading || !pagination.hasNextPage}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Next
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>

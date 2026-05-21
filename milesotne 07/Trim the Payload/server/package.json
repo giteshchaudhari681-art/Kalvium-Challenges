@@ -9,10 +9,12 @@
     "db:push": "prisma db push"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@prisma/client": "^5.10.0",
+    "@types/compression": "^1.8.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "@faker-js/faker": "^8.4.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

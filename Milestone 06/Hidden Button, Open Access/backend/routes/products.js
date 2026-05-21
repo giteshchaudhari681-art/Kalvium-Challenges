@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../prisma');
 const { verifyToken } = require('../middleware/auth');
+const { requireRole } = require('../middleware/requireRole');
 
 const router = express.Router();
 
@@ -55,7 +56,7 @@ router.get('/:id', verifyToken, async (req, res) => {
  * Creates a new product.
  * Protected by: verifyToken only — NO role check
  */
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, requireRole('admin'), async (req, res) => {
   const { name, description, price, category, published } = req.body;
 
   if (!name || !description || price === undefined || !category) {
@@ -85,7 +86,7 @@ router.post('/', verifyToken, async (req, res) => {
  * Updates an existing product.
  * Protected by: verifyToken only — NO role check
  */
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', verifyToken, requireRole('admin'), async (req, res) => {
   const { name, description, price, category, published } = req.body;
 
   try {
@@ -120,7 +121,7 @@ router.put('/:id', verifyToken, async (req, res) => {
  *
  * A customer with a valid JWT CAN call this endpoint and receive HTTP 200.
  */
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const existing = await prisma.product.findUnique({ where: { id: req.params.id } });
 
@@ -146,7 +147,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
  * Toggles the published boolean on a product.
  * Protected by: verifyToken only — NO role check
  */
-router.patch('/:id/publish', verifyToken, async (req, res) => {
+router.patch('/:id/publish', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const existing = await prisma.product.findUnique({ where: { id: req.params.id } });
 

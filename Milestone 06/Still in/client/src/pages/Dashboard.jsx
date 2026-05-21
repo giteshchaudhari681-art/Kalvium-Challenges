@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getPoll, vote } from '../api/poll';
 import { LogOut, RefreshCcw, Vote, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AUTH_LOGOUT_EVENT } from '../auth/session';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -11,6 +12,13 @@ const Dashboard = () => {
   const [voting, setVoting] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const intervalRef = useRef(null);
+
+  const stopPolling = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
   const fetchPoll = async (showLoading = false) => {
     if (showLoading) setLoading(true);
@@ -29,13 +37,27 @@ const Dashboard = () => {
   useEffect(() => {
     fetchPoll(true);
 
-    // AUTO-REFRESH EVERY 10 SECONDS
     intervalRef.current = setInterval(() => {
       fetchPoll();
     }, 10000);
 
-    return () => clearInterval(intervalRef.current);
+    const handleSessionEnd = () => {
+      stopPolling();
+      setVoting(null);
+    };
+
+    window.addEventListener(AUTH_LOGOUT_EVENT, handleSessionEnd);
+
+    return () => {
+      stopPolling();
+      window.removeEventListener(AUTH_LOGOUT_EVENT, handleSessionEnd);
+    };
   }, []);
+
+  const handleLogout = () => {
+    stopPolling();
+    logout();
+  };
 
   const handleVote = async (optionId) => {
     setVoting(optionId);
@@ -67,7 +89,7 @@ const Dashboard = () => {
           </div>
         </div>
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="flex items-center space-x-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg transition-colors border border-red-500/50 font-bold"
         >
           <LogOut size={18} />

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { AUTH_LOGOUT_EVENT, clearAuthStorage } from '../auth/session';
 
 const AuthContext = createContext(null);
 
@@ -25,6 +26,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    const handleAuthLogout = () => {
+      setUser(null);
+      setToken(null);
+      clearAuthStorage();
+    };
+
+    window.addEventListener(AUTH_LOGOUT_EVENT, handleAuthLogout);
+
+    return () => window.removeEventListener(AUTH_LOGOUT_EVENT, handleAuthLogout);
+  }, []);
+
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
@@ -33,8 +46,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthStorage();
   };
 
   return (

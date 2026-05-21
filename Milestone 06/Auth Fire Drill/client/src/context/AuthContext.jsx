@@ -1,37 +1,71 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
+const getUserFromToken = (token) => {
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+
+    if (!decoded.userId || !decoded.role) {
+      return null;
+    }
+
+    if (decoded.exp && decoded.exp * 1000 <= Date.now()) {
+      return null;
+    }
+
+    return {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
+  } catch (error) {
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [role, setRole] = useState(localStorage.getItem('role')); // BROKEN PART 3: Storing role in localStorage
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [user, setUser] = useState(() => getUserFromToken(localStorage.getItem('token')));
 
   useEffect(() => {
-    if(token && role) {
-        setUser({ token, role });
+    if (!token) {
+      setUser(null);
+      return;
     }
-  }, [token, role]);
+
+    const nextUser = getUserFromToken(token);
+
+    if (!nextUser) {
+      localStorage.removeItem('token');
+      setToken(null);
+      setUser(null);
+      return;
+    }
+
+    setUser(nextUser);
+  }, [token]);
 
   const login = (data) => {
     localStorage.setItem('token', data.token);
-    localStorage.setItem('role', data.user.role); // BROKEN PART 3: Storing role in localStorage
     setToken(data.token);
-    setRole(data.user.role);
-    setUser(data.user);
+    setUser(getUserFromToken(data.token));
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('role');
     setToken(null);
-    setRole(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, role, login, logout }}>
+    <AuthContext.Provider value={{ user, token, role: user?.role || null, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

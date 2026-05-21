@@ -2,8 +2,29 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { users } = require('../data/store');
+const crypto = require('crypto');
+const { users, blacklistToken } = require('../data/store');
 const { signToken } = require('../auth/jwt');
+const auth = require('../middleware/auth');
+const csrfProtection = require('../middleware/csrf');
+
+const buildAuthResponse = (user) => {
+  const token = signToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+    csrfToken: crypto.randomBytes(24).toString('hex'),
+  });
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
+  };
+};
 
 router.post('/signup', async (req, res) => {
   const { email, password, role } = req.body;
@@ -13,8 +34,7 @@ router.post('/signup', async (req, res) => {
   const user = { id: Date.now().toString(), email, password: hashedPassword, role: role || 'reader' };
   users.push(user);
   
-  const token = signToken({ userId: user.id }); // BROKEN PART 2: Role missing from payload
-  res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
+  res.json(buildAuthResponse(user));
 });
 
 router.post('/login', async (req, res) => {
@@ -24,10 +44,12 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
-  const token = signToken({ userId: user.id }); // BROKEN PART 2: Role missing from payload
-  
-  // Return role so frontend can store it (which is broken but requested)
-  res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
+  res.json(buildAuthResponse(user));
+});
+
+router.post('/logout', auth, csrfProtection, (req, res) => {
+  blacklistToken(req.token, req.user.exp);
+  res.json({ message: 'Logged out' });
 });
 
 module.exports = router;

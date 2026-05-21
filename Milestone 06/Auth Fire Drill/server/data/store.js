@@ -20,4 +20,31 @@ const fragments = [
 
 const blacklist = [];
 
-module.exports = { users, fragments, blacklist };
+const pruneBlacklistedTokens = () => {
+  const now = Math.floor(Date.now() / 1000);
+
+  for (let index = blacklist.length - 1; index >= 0; index -= 1) {
+    if (!blacklist[index].exp || blacklist[index].exp <= now) {
+      blacklist.splice(index, 1);
+    }
+  }
+};
+
+const blacklistToken = (token, exp) => {
+  pruneBlacklistedTokens();
+  blacklist.push({ token, exp });
+};
+
+const isTokenBlacklisted = (token) => {
+  pruneBlacklistedTokens();
+  return blacklist.some((entry) => entry.token === token);
+};
+
+module.exports = {
+  users,
+  fragments,
+  blacklist,
+  pruneBlacklistedTokens,
+  blacklistToken,
+  isTokenBlacklisted,
+};

@@ -1,16 +1,24 @@
 
 const jwt = require('jsonwebtoken');
 
-// BROKEN PART 1: Hardcoded secret & no expiry
-const SECRET = 'fragments-secret-key';
+const TOKEN_EXPIRY = '1h';
+
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+
+  if (!secret) {
+    throw new Error('JWT_SECRET must be set before the server starts');
+  }
+
+  return secret;
+};
 
 const signToken = (payload) => {
-  // BROKEN PART 1: expiresIn not set
-  return jwt.sign(payload, SECRET);
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: TOKEN_EXPIRY });
 };
 
 const verifyToken = (token) => {
-  return jwt.verify(token, SECRET);
+  return jwt.verify(token, getJwtSecret());
 };
 
-module.exports = { signToken, verifyToken, SECRET };
+module.exports = { signToken, verifyToken, TOKEN_EXPIRY, getJwtSecret };

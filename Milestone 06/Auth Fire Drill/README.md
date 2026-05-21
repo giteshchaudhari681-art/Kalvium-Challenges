@@ -23,8 +23,9 @@ Your mission as a security engineer is to identify, document, and fix six critic
 - **Middleware Gaps**: Does the authentication middleware provide enough information for other parts of the app to make security decisions?
 
 ## How to Run
-1.  **Setup Server**: `cd server && npm install && npm start`
-2.  **Setup Client**: `cd client && npm install && npm run dev`
+1.  **Setup Server Environment**: copy `server/.env.example` to `server/.env` and set a strong `JWT_SECRET`
+2.  **Setup Server**: `cd server && npm install && npm start`
+3.  **Setup Client**: `cd client && npm install && npm run dev`
 
 ---
 > [!IMPORTANT]

@@ -56,7 +56,8 @@ const EventDetail = () => {
     );
     if (!event) return null;
 
-    const hasRSVPed = event.rsvps?.includes(user?.id);
+    const canRSVP = event.isInvited && !event.hasRSVPed;
+    const canDelete = event.isCreator;
 
     return (
         <div className="min-h-screen bg-slate-50 pb-24">
@@ -117,20 +118,29 @@ const EventDetail = () => {
 
                                 {/* RSVP Action Footer */}
                                 <div className="pt-10 flex flex-col md:flex-row gap-4 items-center border-t border-slate-100">
-                                    {/* Broken Flow 5: Buttons shown regardless of permissions in starter */}
-                                    <button 
-                                        onClick={handleRSVP} 
-                                        className="btn-primary w-full md:flex-1 py-4 text-lg font-bold shadow-xl shadow-blue-200"
-                                    >
-                                        <CheckCircle size={24} /> RSVP for Event
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={handleDelete} 
-                                        className="btn-danger w-full md:w-auto h-14 md:px-6 shadow-xl shadow-red-200"
-                                    >
-                                        <Trash2 size={24} />
-                                    </button>
+                                    {canRSVP && (
+                                        <button 
+                                            onClick={handleRSVP} 
+                                            className="btn-primary w-full md:flex-1 py-4 text-lg font-bold shadow-xl shadow-blue-200"
+                                        >
+                                            <CheckCircle size={24} /> RSVP for Event
+                                        </button>
+                                    )}
+
+                                    {event.hasRSVPed && (
+                                        <div className="w-full md:flex-1 py-4 px-5 rounded-2xl bg-green-50 border border-green-200 text-green-700 text-center font-bold">
+                                            RSVP confirmed
+                                        </div>
+                                    )}
+
+                                    {canDelete && (
+                                        <button 
+                                            onClick={handleDelete} 
+                                            className="btn-danger w-full md:w-auto h-14 md:px-6 shadow-xl shadow-red-200"
+                                        >
+                                            <Trash2 size={24} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 

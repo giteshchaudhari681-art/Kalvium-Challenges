@@ -2,7 +2,7 @@ import Expense from '../models/Expense.js';
 
 // @desc    Get all expenses
 // @route   GET /api/expenses
-// @access  Protected (Should be manager/admin-only)
+// @access  Manager/Admin
 export const getAllExpenses = async (req, res) => {
   const expenses = await Expense.find({}).populate('submittedBy', 'name email');
   res.json(expenses);
@@ -32,41 +32,68 @@ export const createExpense = async (req, res) => {
 
 // @desc    Update an expense
 // @route   PUT /api/expenses/:id
-// @access  Protected (Gap 4 — No ownership check)
+// @access  Owner only
 export const updateExpense = async (req, res) => {
-  // ❌ Any user can update any expense — no check: expense.submittedBy === req.user.userId
-  const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(expense);
+  const expense = await Expense.findById(req.params.id);
+
+  if (!expense) {
+    return res.status(404).json({ message: 'Expense not found' });
+  }
+
+  const isOwner = expense.submittedBy.toString() === req.user._id.toString();
+
+  if (!isOwner) {
+    return res.status(403).json({ message: 'You can only modify your own expenses.' });
+  }
+
+  expense.title = req.body.title ?? expense.title;
+  expense.amount = req.body.amount ?? expense.amount;
+  expense.category = req.body.category ?? expense.category;
+
+  const updatedExpense = await expense.save();
+  res.json(updatedExpense);
 };
 
 // @desc    Approve an expense
 // @route   PUT /api/expenses/:id/approve
-// @access  Protected (Should be manager/admin-only)
+// @access  Manager/Admin
 export const approveExpense = async (req, res) => {
-  const expense = await Expense.findByIdAndUpdate(
-    req.params.id, 
-    { status: 'approved' }, 
-    { new: true }
-  );
-  res.json(expense);
+  const expense = await Expense.findById(req.params.id);
+
+  if (!expense) {
+    return res.status(404).json({ message: 'Expense not found' });
+  }
+
+  expense.status = 'approved';
+  const updatedExpense = await expense.save();
+  res.json(updatedExpense);
 };
 
 // @desc    Reject an expense
 // @route   PUT /api/expenses/:id/reject
-// @access  Protected (Should be manager/admin-only)
+// @access  Manager/Admin
 export const rejectExpense = async (req, res) => {
-  const expense = await Expense.findByIdAndUpdate(
-    req.params.id, 
-    { status: 'rejected' }, 
-    { new: true }
-  );
-  res.json(expense);
+  const expense = await Expense.findById(req.params.id);
+
+  if (!expense) {
+    return res.status(404).json({ message: 'Expense not found' });
+  }
+
+  expense.status = 'rejected';
+  const updatedExpense = await expense.save();
+  res.json(updatedExpense);
 };
 
 // @desc    Delete an expense
 // @route   DELETE /api/expenses/:id
-// @access  Protected (Should be admin-only)
+// @access  Admin only
 export const deleteExpense = async (req, res) => {
-  const expense = await Expense.findByIdAndDelete(req.params.id);
+  const expense = await Expense.findById(req.params.id);
+
+  if (!expense) {
+    return res.status(404).json({ message: 'Expense not found' });
+  }
+
+  await expense.deleteOne();
   res.json({ message: 'Expense removed' });
 };

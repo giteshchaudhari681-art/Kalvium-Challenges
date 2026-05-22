@@ -1,4 +1,4 @@
-import { Profiler, useEffect, useState } from "react";
+import { Profiler, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { MissionCard } from "./MissionCard";
 
@@ -49,20 +49,24 @@ export default function App() {
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
-  const filteredAndSortedMissions = missions
-    .filter((mission) => {
-      if (!normalizedSearch) {
-        heavyScore(mission, normalizedSearch);
-        return true;
-      }
+  const filteredAndSortedMissions = useMemo(
+    () =>
+      missions
+        .filter((mission) => {
+          if (!normalizedSearch) {
+            heavyScore(mission, normalizedSearch);
+            return true;
+          }
 
-      return heavyScore(mission, normalizedSearch) > 0;
-    })
-    .sort((left, right) => {
-      const leftScore = heavyScore(left, normalizedSearch);
-      const rightScore = heavyScore(right, normalizedSearch);
-      return rightScore - leftScore;
-    });
+          return heavyScore(mission, normalizedSearch) > 0;
+        })
+        .sort((left, right) => {
+          const leftScore = heavyScore(left, normalizedSearch);
+          const rightScore = heavyScore(right, normalizedSearch);
+          return rightScore - leftScore;
+        }),
+    [missions, normalizedSearch]
+  );
 
   const handleProfilerRender = (_id, _phase, actualDuration) => {
     profilerMetrics.commits.push(actualDuration);

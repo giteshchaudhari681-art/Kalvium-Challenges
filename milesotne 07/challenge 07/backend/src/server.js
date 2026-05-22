@@ -28,6 +28,7 @@ app.get("/api/missions", async (req, res) => {
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
     const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : 200;
     const skip = (page - 1) * limit;
+    const isPaginatedRequest = Boolean(req.query.page || req.query.limit);
 
     queryCount += 1;
     const total = await prisma.mission.count();
@@ -37,12 +38,39 @@ app.get("/api/missions", async (req, res) => {
       skip,
       take: limit,
       orderBy: { launchDate: "desc" },
-      include: {
-        crewMembers: true,
-        logs: {
-          orderBy: { timestamp: "desc" }
-        }
-      }
+      ...(isPaginatedRequest
+        ? {
+            select: {
+              id: true,
+              name: true,
+              launchDate: true,
+              rocket: true,
+              crewMembers: {
+                select: {
+                  id: true,
+                  name: true,
+                  role: true
+                }
+              },
+              logs: {
+                select: {
+                  id: true,
+                  event: true,
+                  level: true,
+                  timestamp: true
+                },
+                orderBy: { timestamp: "desc" }
+              }
+            }
+          }
+        : {
+            include: {
+              crewMembers: true,
+              logs: {
+                orderBy: { timestamp: "desc" }
+              }
+            }
+          })
     });
 
     const totalPages = Math.max(1, Math.ceil(total / limit));
@@ -59,7 +87,7 @@ app.get("/api/missions", async (req, res) => {
     };
 
     res.setHeader("X-Query-Count", String(queryCount));
-    res.json(req.query.page || req.query.limit ? payload : missions);
+    res.json(isPaginatedRequest ? payload : missions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch missions" });

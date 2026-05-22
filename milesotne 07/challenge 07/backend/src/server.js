@@ -1,4 +1,5 @@
 const express = require("express");
+const compression = require("compression");
 const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 
@@ -13,6 +14,7 @@ prisma.$on("query", (event) => {
 const app = express();
 
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {

@@ -45,14 +45,29 @@ export default function App() {
   const measurementRunId = measurementParams?.get("runId");
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchMissions() {
       setLoading(true);
-      const response = await api.get("/api/missions");
-      setMissions(response.data);
-      setLoading(false);
+
+      try {
+        const response = await api.get("/api/missions", {
+          signal: controller.signal
+        });
+        setMissions(response.data);
+        setLoading(false);
+      } catch (error) {
+        if (error.name !== "CanceledError" && error.name !== "AbortError") {
+          throw error;
+        }
+      }
     }
 
     fetchMissions();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const normalizedSearch = searchTerm.trim().toLowerCase();

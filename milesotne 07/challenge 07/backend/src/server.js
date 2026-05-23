@@ -1,4 +1,5 @@
 const express = require("express");
+const compression = require("compression");
 const cors = require("cors");
 const { PrismaClient } = require("./prisma");
 
@@ -14,6 +15,7 @@ const app = express();
 let latestClientMetrics = null;
 
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {

@@ -11,6 +11,7 @@ function request(url, headers = []) {
     "curl.exe",
     [
       "-s",
+      "--compressed",
       "-D",
       "-",
       "-o",

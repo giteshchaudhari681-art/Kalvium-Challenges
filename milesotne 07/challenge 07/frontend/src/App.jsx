@@ -35,6 +35,7 @@ export default function App() {
   const [missions, setMissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(12);
   const measurementSentRef = useRef(false);
   const measurementSearchTriggeredRef = useRef(false);
   const measurementParams =
@@ -90,6 +91,7 @@ export default function App() {
         }),
     [missions, normalizedSearch]
   );
+  const visibleMissions = filteredAndSortedMissions.slice(0, visibleCount);
 
   const handleProfilerRender = (_id, _phase, actualDuration) => {
     profilerMetrics.commits.push(actualDuration);
@@ -170,7 +172,7 @@ export default function App() {
         <main className="mission-grid">
           {loading ? <p className="status">Loading missions...</p> : null}
           {!loading
-            ? filteredAndSortedMissions.map((mission) => (
+            ? visibleMissions.map((mission) => (
                 <MissionCard
                   key={mission.id}
                   mission={mission}
@@ -185,6 +187,17 @@ export default function App() {
             : null}
         </main>
       </Profiler>
+
+      {!loading && visibleCount < filteredAndSortedMissions.length ? (
+        <div className="load-more-row">
+          <button
+            className="load-more-button"
+            onClick={() => setVisibleCount((count) => count + 12)}
+          >
+            Load More
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

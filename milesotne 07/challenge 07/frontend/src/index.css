@@ -135,6 +135,22 @@ input {
   grid-column: 1 / -1;
 }
 
+.load-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.load-more-button {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  color: #06101d;
+  background: linear-gradient(135deg, #9ad8ff, #7ee081);
+  cursor: pointer;
+  font-weight: 700;
+}
+
 @media (max-width: 780px) {
   .hero {
     flex-direction: column;

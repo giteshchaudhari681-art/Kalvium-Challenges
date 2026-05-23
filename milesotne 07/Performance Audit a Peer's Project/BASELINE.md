@@ -21,3 +21,4 @@
 | 2. Trim payload | `65.795 ms` | `2.09 KB` | `2` | `27.5 ms` | `829` | `20` |
 | 3. Enable gzip compression | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `2` | `60.7 ms` | `829` | `20` |
 | 4. AbortController cleanup | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `1` | `38.1 ms` | `829` | `20` |
+| 5. Memoize search filter | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `1` | `44.2 ms` | `829` | `20` |

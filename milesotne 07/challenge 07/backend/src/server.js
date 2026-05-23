@@ -39,17 +39,49 @@ app.get("/api/missions", async (req, res) => {
     const isPaginatedRequest = Boolean(req.query.page || req.query.limit);
 
     const total = await prisma.mission.count();
-    const missions = await prisma.mission.findMany({
-      skip,
-      take: limit,
-      orderBy: { launchDate: "desc" },
-      include: {
-        crewMembers: true,
-        logs: {
-          orderBy: { timestamp: "desc" }
-        }
-      }
-    });
+    const missions = await prisma.mission.findMany(
+      isPaginatedRequest
+        ? {
+            skip,
+            take: limit,
+            orderBy: { launchDate: "desc" },
+            select: {
+              id: true,
+              name: true,
+              launchDate: true,
+              rocket: true,
+              destination: true,
+              status: true,
+              crewMembers: {
+                select: {
+                  id: true,
+                  name: true,
+                  role: true
+                }
+              },
+              logs: {
+                select: {
+                  id: true,
+                  event: true,
+                  level: true,
+                  timestamp: true
+                },
+                orderBy: { timestamp: "desc" }
+              }
+            }
+          }
+        : {
+            skip,
+            take: limit,
+            orderBy: { launchDate: "desc" },
+            include: {
+              crewMembers: true,
+              logs: {
+                orderBy: { timestamp: "desc" }
+              }
+            }
+          }
+    );
 
     const totalPages = Math.max(1, Math.ceil(total / limit));
 

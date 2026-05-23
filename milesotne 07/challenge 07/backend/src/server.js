@@ -29,9 +29,19 @@ app.get("/api/client-metrics", (_req, res) => {
   res.json(latestClientMetrics || {});
 });
 
-app.get("/api/missions", async (_req, res) => {
+app.get("/api/missions", async (req, res) => {
   try {
+    const rawPage = Number(req.query.page || 1);
+    const rawLimit = Number(req.query.limit || 200);
+    const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+    const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : 200;
+    const skip = (page - 1) * limit;
+    const isPaginatedRequest = Boolean(req.query.page || req.query.limit);
+
+    const total = await prisma.mission.count();
     const missions = await prisma.mission.findMany({
+      skip,
+      take: limit,
       orderBy: { launchDate: "desc" },
       include: {
         crewMembers: true,
@@ -41,8 +51,24 @@ app.get("/api/missions", async (_req, res) => {
       }
     });
 
-    res.setHeader("X-Query-Count", "1");
-    res.json(missions);
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+
+    res.setHeader("X-Query-Count", "2");
+    res.json(
+      isPaginatedRequest
+        ? {
+            data: missions,
+            meta: {
+              page,
+              limit,
+              total,
+              totalPages,
+              hasNextPage: page < totalPages,
+              hasPrevPage: page > 1
+            }
+          }
+        : missions
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch missions" });

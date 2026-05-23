@@ -1,0 +1,13 @@
+{
+  "name": "space-mission-logs-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "measure": "node scripts/measure.js",
+    "load:test": "artillery run load-test.yml"
+  },
+  "devDependencies": {
+    "artillery": "^2.0.22",
+    "playwright": "^1.52.0"
+  }
+}

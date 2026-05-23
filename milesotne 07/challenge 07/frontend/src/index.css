@@ -1,0 +1,163 @@
+:root {
+  color: #e5eef7;
+  background: radial-gradient(circle at top, #133255, #081220 55%);
+  font-family: "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #081220;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+#root {
+  width: 100%;
+}
+
+.app-shell {
+  margin: 0 auto;
+  max-width: 1400px;
+  padding: 32px 20px 48px;
+}
+
+.hero {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #8cb7e8;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 3rem;
+}
+
+.subtitle {
+  max-width: 680px;
+  color: #bad1ea;
+}
+
+.search-panel {
+  display: grid;
+  gap: 8px;
+  min-width: 320px;
+  padding: 18px;
+  border: 1px solid rgba(140, 183, 232, 0.2);
+  border-radius: 20px;
+  background: rgba(9, 18, 31, 0.72);
+}
+
+.search-panel input {
+  padding: 12px 14px;
+  border: 1px solid rgba(140, 183, 232, 0.25);
+  border-radius: 12px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.mission-card {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(10, 22, 37, 0.92);
+  border: 1px solid rgba(140, 183, 232, 0.18);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.22);
+}
+
+.mission-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mission-card__top h2 {
+  margin: 0;
+}
+
+.mission-card__label {
+  margin: 0 0 8px;
+  color: #8cb7e8;
+  font-size: 0.9rem;
+}
+
+.mission-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  color: #9db6cf;
+  font-size: 0.92rem;
+}
+
+.mission-card__summary {
+  color: #d2def0;
+  line-height: 1.6;
+}
+
+.mission-card ul {
+  padding-left: 18px;
+  color: #bad1ea;
+}
+
+.danger-button {
+  height: fit-content;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, #f85f73, #cb3147);
+  cursor: pointer;
+}
+
+.status {
+  grid-column: 1 / -1;
+}
+
+.load-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.load-more-button {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  color: #06101d;
+  background: linear-gradient(135deg, #9ad8ff, #7ee081);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+@media (max-width: 780px) {
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-panel {
+    min-width: 0;
+  }
+}

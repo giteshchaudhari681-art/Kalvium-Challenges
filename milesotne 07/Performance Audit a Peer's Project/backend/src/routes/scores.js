@@ -18,6 +18,13 @@ router.get('/', async (req, res) => {
         orderBy: { date: 'desc' },
         skip,
         take: limit,
+        select: {
+          id: true,
+          game: true,
+          player: true,
+          score: true,
+          date: true,
+        },
       }),
       prisma.score.count(),
     ]);

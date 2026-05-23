@@ -1,7 +1,7 @@
 {
-  "responseTimeMs": 29.748,
+  "responseTimeMs": 72.831,
   "payloadBytes": 3327,
   "queryCount": 2,
-  "commitDurationMs": 156.2000000011176,
+  "commitDurationMs": 41.8000000026077,
   "domNodes": 312
 }

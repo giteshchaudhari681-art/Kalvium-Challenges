@@ -1,4 +1,4 @@
-import { Profiler, useEffect, useMemo, useRef, useState } from "react";
+import { Profiler, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { MissionCard } from "./MissionCard";
 
@@ -92,6 +92,9 @@ export default function App() {
     [missions, normalizedSearch]
   );
   const visibleMissions = filteredAndSortedMissions.slice(0, visibleCount);
+  const handleDelete = useCallback((id) => {
+    setMissions((current) => current.filter((item) => item.id !== id));
+  }, []);
 
   const handleProfilerRender = (_id, _phase, actualDuration) => {
     profilerMetrics.commits.push(actualDuration);
@@ -176,11 +179,7 @@ export default function App() {
                 <MissionCard
                   key={mission.id}
                   mission={mission}
-                  onDelete={(id) =>
-                    setMissions((current) =>
-                      current.filter((item) => item.id !== id)
-                    )
-                  }
+                  onDelete={handleDelete}
                   style={missionCardSpacing}
                 />
               ))

@@ -1,4 +1,6 @@
-export function MissionCard({ mission, onDelete, style }) {
+import { memo } from "react";
+
+function MissionCardComponent({ mission, onDelete, style }) {
   return (
     <article className="mission-card" style={style}>
       <div className="mission-card__top">
@@ -43,3 +45,5 @@ export function MissionCard({ mission, onDelete, style }) {
     </article>
   );
 }
+
+export const MissionCard = memo(MissionCardComponent);

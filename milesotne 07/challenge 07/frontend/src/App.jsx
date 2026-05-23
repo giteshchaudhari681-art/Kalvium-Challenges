@@ -6,6 +6,8 @@ const api = axios.create({
   baseURL: "http://localhost:4000"
 });
 
+const missionCardSpacing = { marginBottom: "8px" };
+
 const profilerMetrics = {
   commits: [],
   maxCommitDuration: 0
@@ -158,7 +160,7 @@ export default function App() {
                       current.filter((item) => item.id !== id)
                     )
                   }
-                  style={{ marginBottom: "8px" }}
+                  style={missionCardSpacing}
                 />
               ))
             : null}

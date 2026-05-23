@@ -22,3 +22,4 @@
 | 3. Enable gzip compression | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `2` | `60.7 ms` | `829` | `20` |
 | 4. AbortController cleanup | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `1` | `38.1 ms` | `829` | `20` |
 | 5. Memoize search filter | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `1` | `44.2 ms` | `829` | `20` |
+| 6. Stable delete handler + `React.memo` | `61.108 ms` | `645 bytes` compressed (`2.09 KB` uncompressed) | `1` | `34.5 ms` | `829` | `20` |

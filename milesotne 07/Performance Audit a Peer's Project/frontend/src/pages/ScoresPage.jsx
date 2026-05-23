@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import ScoreList from '../components/ScoreList';
 import { Trophy, Gamepad2, Info } from 'lucide-react';
@@ -37,9 +37,9 @@ const ScoresPage = () => {
     };
   }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = useCallback((id) => {
     setScores(prev => prev.filter(s => s.id !== id));
-  };
+  }, []);
 
   return (
     <div className="app-container">

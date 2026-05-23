@@ -9,19 +9,32 @@ const ScoresPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchScores = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('/api/scores');
+        const res = await axios.get('/api/scores', {
+          signal: controller.signal,
+        });
         setScores(res.data.scores ?? res.data);
         setTotalScores(res.data.pagination?.total ?? res.data.length ?? 0);
       } catch (err) {
-        console.error(err);
+        if (err.code !== 'ERR_CANCELED') {
+          console.error(err);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
+
     fetchScores();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const handleDelete = (id) => {

@@ -6,17 +6,17 @@
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
+    "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "compression": "^1.8.1",
+    "@prisma/client": "^6.19.3",
     "cors": "^2.8.5",
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "prisma": "^5.22.0"
+    "prisma": "^6.19.3"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

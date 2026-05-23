@@ -1,12 +1,10 @@
-import { Profiler, useEffect, useMemo, useState } from "react";
+import { Profiler, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { MissionCard } from "./MissionCard";
 
 const api = axios.create({
   baseURL: "http://localhost:4000"
 });
-
-const missionCardSpacing = { marginBottom: "8px" };
 
 const profilerMetrics = {
   commits: [],
@@ -23,9 +21,9 @@ function heavyScore(mission, searchTerm) {
     .map((member) => member.name)
     .join(" ")} ${mission.logs.map((log) => log.event).join(" ")}`.toLowerCase();
 
-  for (let i = 0; i < 200; i += 1) {
+  for (let index = 0; index < 200; index += 1) {
     score += haystack.includes(searchTerm) ? 1 : 0;
-    score += haystack.charCodeAt(i % haystack.length) || 0;
+    score += haystack.charCodeAt(index % haystack.length) || 0;
   }
 
   return score;
@@ -35,6 +33,14 @@ export default function App() {
   const [missions, setMissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const measurementSentRef = useRef(false);
+  const measurementSearchTriggeredRef = useRef(false);
+  const measurementParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const measurementMode = measurementParams?.get("measure") === "1";
+  const measurementRunId = measurementParams?.get("runId");
 
   useEffect(() => {
     async function fetchMissions() {
@@ -45,28 +51,24 @@ export default function App() {
     }
 
     fetchMissions();
-  });
+  }, []);
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
-  const filteredAndSortedMissions = useMemo(
-    () =>
-      missions
-        .filter((mission) => {
-          if (!normalizedSearch) {
-            heavyScore(mission, normalizedSearch);
-            return true;
-          }
+  const filteredAndSortedMissions = missions
+    .filter((mission) => {
+      if (!normalizedSearch) {
+        heavyScore(mission, normalizedSearch);
+        return true;
+      }
 
-          return heavyScore(mission, normalizedSearch) > 0;
-        })
-        .sort((left, right) => {
-          const leftScore = heavyScore(left, normalizedSearch);
-          const rightScore = heavyScore(right, normalizedSearch);
-          return rightScore - leftScore;
-        }),
-    [missions, normalizedSearch]
-  );
+      return heavyScore(mission, normalizedSearch) > 0;
+    })
+    .sort((left, right) => {
+      const leftScore = heavyScore(left, normalizedSearch);
+      const rightScore = heavyScore(right, normalizedSearch);
+      return rightScore - leftScore;
+    });
 
   const handleProfilerRender = (_id, _phase, actualDuration) => {
     profilerMetrics.commits.push(actualDuration);
@@ -75,6 +77,50 @@ export default function App() {
       actualDuration
     );
   };
+
+  useEffect(() => {
+    if (!measurementMode || loading || measurementSearchTriggeredRef.current) {
+      return;
+    }
+
+    measurementSearchTriggeredRef.current = true;
+    const timeoutId = window.setTimeout(() => {
+      setSearchTerm("mars");
+    }, 1200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loading, measurementMode]);
+
+  useEffect(() => {
+    if (
+      !measurementMode ||
+      loading ||
+      !measurementSearchTriggeredRef.current ||
+      searchTerm !== "mars" ||
+      measurementSentRef.current
+    ) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(async () => {
+      measurementSentRef.current = true;
+      const payload = {
+        runId: measurementRunId,
+        commitDurationMs: profilerMetrics.maxCommitDuration,
+        domNodes: document.querySelectorAll("*").length
+      };
+
+      await fetch("http://localhost:4000/api/client-metrics", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+    }, 1200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loading, measurementMode, measurementRunId, searchTerm]);
 
   return (
     <div className="app-shell">
@@ -112,7 +158,7 @@ export default function App() {
                       current.filter((item) => item.id !== id)
                     )
                   }
-                  style={missionCardSpacing}
+                  style={{ marginBottom: "8px" }}
                 />
               ))
             : null}

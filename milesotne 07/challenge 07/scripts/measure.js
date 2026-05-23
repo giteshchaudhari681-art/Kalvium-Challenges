@@ -11,7 +11,6 @@ function request(url, headers = []) {
     "curl.exe",
     [
       "-s",
-      "--compressed",
       "-D",
       "-",
       "-o",
@@ -28,7 +27,7 @@ function request(url, headers = []) {
 async function main() {
   const missionsPath = process.env.MISSIONS_PATH || "/api/missions";
   const backendUrl = `http://localhost:4000${missionsPath}`;
-  const frontendUrl = "http://localhost:5173";
+  const frontendUrl = "http://127.0.0.1:5173";
 
   const backendRaw = request(backendUrl);
   const queryMatch = backendRaw.match(/x-query-count:\s*(\d+)/i);
@@ -41,7 +40,12 @@ async function main() {
   };
 
   try {
-    const { chromium } = require("playwright");
+    const { chromium } = require(path.join(
+      root,
+      "frontend",
+      "node_modules",
+      "playwright"
+    ));
     const browser = await chromium.launch({
       headless: true,
       channel: "msedge"
@@ -64,7 +68,7 @@ async function main() {
     }));
     await browser.close();
   } catch (error) {
-    console.warn("Playwright measurement skipped:", error.message);
+    console.warn("UI measurement skipped:", error.message);
   }
 
   const metrics = {
